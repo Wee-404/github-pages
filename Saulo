@@ -1,0 +1,781 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <!-- Otimizações para iOS -->
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <title>Treino</title>
+  <!-- Importa uma fonte elegante do Google Fonts -->
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700&display=swap" rel="stylesheet">
+  <style>
+    /* Reset e Box Sizing */
+    * {
+      box-sizing: border-box;
+    }
+    html {
+      scroll-behavior: smooth;
+    }
+    body {
+      font-family: 'Calibri', sans-serif;
+      background-color: #f5f5f5;
+      color: #333;
+      margin: 20px;
+      transition: background-color 0.3s ease, color 0.3s ease;
+    }
+    /* Estilo para Dark Mode */
+    .dark-mode {
+      background-color: #1a1a1a;
+      color: #ddd;
+    }
+    .dark-mode .header-container {
+      background: linear-gradient(45deg, #1f3b70, #274d6a);
+      color: #fff;
+    }
+    .dark-mode table {
+      background-color: #333;
+      color: #ddd;
+    }
+    .dark-mode th {
+      background-color: #444;
+      color: #ddd;
+    }
+    .dark-mode td {
+      border-color: #555;
+    }
+    .dark-mode .toggle-btn,
+    .dark-mode .nav-buttons button {
+      background-color: #274d6a;
+    }
+    .dark-mode #backToTop {
+      background: #274d6a;
+    }
+    /* Estilos para a visualização simplificada no modo claro */
+    .simplified ul {
+      list-style: none;
+      padding: 0;
+    }
+    .simplified li {
+      background: #fff;
+      margin-bottom: 10px;
+      padding: 10px;
+      border-radius: 5px;
+      box-shadow: 0 0 5px rgba(0,0,0,0.1);
+    }
+    .simplified li strong {
+      display: block;
+      margin-bottom: 5px;
+      color: #365f91;
+    }
+    /* Estilos para a visualização simplificada no modo escuro */
+    .dark-mode .simplified li {
+      background: #333;
+      color: #ddd;
+      box-shadow: 0 0 5px rgba(255,255,255,0.1);
+    }
+    .dark-mode .simplified li strong {
+      color: #ddd;
+    }
+    /* Container centralizado e responsivo */
+    .container {
+      max-width: 600px;
+      margin: 0 auto;
+      padding: 0 15px;
+    }
+    @media (min-width: 769px) {
+      .container {
+        max-width: 800px;
+      }
+    }
+    /* Regras adicionais para computadores */
+    @media (min-width: 1024px) {
+      body {
+        margin: 40px;
+      }
+      .container {
+        max-width: 1000px;
+        padding: 20px;
+      }
+      header {
+        margin-bottom: 40px;
+      }
+      .header-container {
+        padding: 60px 40px;
+      }
+      .header-container h1 {
+        font-size: 4em;
+      }
+      .nav-buttons {
+        margin: 30px 0;
+      }
+      .toggle-btn {
+        width: 220px;
+        font-size: 1.2em;
+      }
+      footer {
+        font-size: 1.4em;
+      }
+    }
+    header {
+      margin-bottom: 20px;
+    }
+    /* Cabeçalho aprimorado e responsivo */
+    .header-container {
+      background: linear-gradient(45deg, #365f91, #4f81bd);
+      padding: 40px 20px;
+      border-radius: 15px;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+      color: #fff;
+      text-align: center;
+      overflow: hidden;
+      position: relative;
+    }
+    .header-container h1 {
+      font-family: 'Playfair Display', serif;
+      font-size: 3em;
+      margin-bottom: 15px;
+      text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+      word-wrap: break-word;
+    }
+    .header-info {
+      display: flex;
+      justify-content: center;
+      gap: 30px;
+      font-size: 1.2em;
+      flex-wrap: wrap;
+    }
+    .header-info span {
+      background: rgba(255, 255, 255, 0.25);
+      padding: 8px 15px;
+      border-radius: 8px;
+    }
+    /* Botão do Modo Escuro (ícone) posicionado no canto superior direito */
+    #darkModeToggle {
+      position: fixed;
+      top: 20px;
+      right: 20px;
+      background: transparent;
+      border: none;
+      cursor: pointer;
+      z-index: 1001;
+      width: 40px;
+      height: 40px;
+      transition: transform 0.1s ease;
+    }
+    #darkModeToggle:hover {
+      transform: scale(1.1);
+    }
+    /* Navegação por botões para os treinos */
+    .nav-buttons {
+      display: flex;
+      justify-content: center;
+      gap: 15px;
+      margin: 20px 0;
+      flex-wrap: wrap;
+    }
+    .nav-buttons button {
+      padding: 10px 20px;
+      background-color: #4f81bd;
+      color: #fff;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+      font-weight: bold;
+      transition: background-color 0.3s ease, transform 0.1s ease;
+    }
+    .nav-buttons button:hover {
+      background-color: #365f91;
+    }
+    /* Feedback visual: efeito de click */
+    button:active {
+      transform: scale(0.98);
+    }
+    /* Botão para alternar visualizações */
+    .toggle-btn {
+      display: block;
+      width: 200px;
+      margin: 20px auto;
+      padding: 10px;
+      background-color: #365f91;
+      color: #fff;
+      border: none;
+      border-radius: 5px;
+      font-weight: bold;
+      cursor: pointer;
+      transition: background-color 0.3s ease, transform 0.1s ease;
+    }
+    .toggle-btn:hover {
+      background-color: #4f81bd;
+    }
+    section {
+      margin-bottom: 40px;
+    }
+    h2 {
+      color: #4f81bd;
+      font-size: 1.8em;
+      margin-bottom: 10px;
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      background-color: #fff;
+      box-shadow: 0 0 10px rgba(0,0,0,0.1);
+    }
+    th, td {
+      padding: 12px;
+      text-align: left;
+      border: 1px solid #ddd;
+      vertical-align: middle;
+    }
+    th {
+      background-color: #f2f2f2;
+    }
+    /* Container responsivo para vídeos (16:9) */
+    .video-container {
+      position: relative;
+      padding-bottom: 56.25%; /* 16:9 */
+      height: 0;
+      overflow: hidden;
+      max-width: 200px;
+    }
+    .video-container iframe,
+    .video-container object,
+    .video-container embed,
+    .video-container video {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+    }
+    /* Responsividade para a tabela */
+    @media screen and (max-width: 768px) {
+      .header-container h1 {
+        font-size: 2em;
+      }
+      .video-container {
+        max-width: 100%;
+      }
+      table, thead, tbody, th, td, tr {
+        display: block;
+      }
+      th {
+        position: absolute;
+        top: -9999px;
+        left: -9999px;
+      }
+      tr {
+        margin-bottom: 15px;
+        border: 1px solid #ddd;
+      }
+      td {
+        border: none;
+        position: relative;
+        padding-left: 50%;
+      }
+      td:before {
+        position: absolute;
+        top: 12px;
+        left: 12px;
+        width: 45%;
+        padding-right: 10px;
+        white-space: nowrap;
+        font-weight: bold;
+      }
+      td:nth-of-type(1):before { content: "#"; }
+      td:nth-of-type(2):before { content: "Exercício"; }
+      td:nth-of-type(3):before { content: "Séries x Reps"; }
+      td:nth-of-type(4):before { content: "Peso"; }
+      td:nth-of-type(5):before { content: "Ajuste"; }
+      td:nth-of-type(6):before { content: "Vídeo"; }
+    }
+    footer {
+      text-align: center;
+      margin-top: 40px;
+      font-size: 1.2em;
+      color: #365f91;
+    }
+    /* Efeitos de fade para alternância de visualizações */
+    #completeView, #simplifiedView {
+      transition: opacity 0.5s ease;
+    }
+    /* Estado inicial: visualização completa visível */
+    #completeView {
+      opacity: 1;
+      display: block;
+    }
+    #simplifiedView {
+      opacity: 0;
+      display: none;
+    }
+    /* Botão Voltar ao Topo */
+    #backToTop {
+      position: fixed;
+      bottom: 20px;
+      right: 20px;
+      background: #365f91;
+      color: #fff;
+      border: none;
+      border-radius: 50%;
+      width: 40px;
+      height: 40px;
+      font-size: 1.5em;
+      cursor: pointer;
+      display: none;
+      align-items: center;
+      justify-content: center;
+      z-index: 1000;
+      transition: background-color 0.3s ease;
+    }
+    #backToTop:hover {
+      background: #4f81bd;
+    }
+  </style>
+  <script>
+    // Variáveis para os ícones (em SVG)
+    const moonIcon = `<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor" viewBox="0 0 16 16">
+      <path d="M6 0a6 6 0 0 1 4.472 10.472 5 5 0 1 0-4.472-10.472z"/>
+    </svg>`;
+    const sunIcon = `<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor" viewBox="0 0 16 16">
+      <path d="M8 4.5a.5.5 0 0 1 .5.5v1a.5.5 0 0 1-1 0v-1a.5.5 0 0 1 .5-.5zm0 6a.5.5 0 0 1 .5.5v1a.5.5 0 0 1-1 0v-1a.5.5 0 0 1 .5-.5zm3.536-4.536a.5.5 0 0 1 .354.854l-.707.707a.5.5 0 1 1-.707-.707l.707-.707a.5.5 0 0 1 .353-.147zm-7.07 0a.5.5 0 0 1 .354.147l.707.707a.5.5 0 1 1-.707.707l-.707-.707a.5.5 0 0 1 .354-.854zm7.07 3.536a.5.5 0 0 1-.5.5h-1a.5.5 0 0 1 0-1h1a.5.5 0 0 1 .5.5zm-7.07 0a.5.5 0 0 1-.5.5h-1a.5.5 0 0 1 0-1h1a.5.5 0 0 1 .5.5zm5.657-3.536a.5.5 0 0 1-.353.147l-.707-.707a.5.5 0 0 1 .707-.707l.707.707a.5.5 0 0 1-.354.854zm-7.071 0a.5.5 0 0 1-.354.147l-.707-.707a.5.5 0 0 1 .707-.707l.707.707a.5.5 0 0 1-.353.854zM8 0a.5.5 0 0 1 .5.5v1a.5.5 0 0 1-1 0v-1A.5.5 0 0 1 8 0zm0 12a4 4 0 1 0 0-8 4 4 0 0 0 0 8z"/>
+    </svg>`;
+
+    // Alterna o Dark Mode e atualiza o ícone
+    function toggleDarkMode() {
+      document.body.classList.toggle('dark-mode');
+      const darkBtn = document.getElementById('darkModeToggle');
+      darkBtn.innerHTML = document.body.classList.contains('dark-mode') ? sunIcon : moonIcon;
+    }
+
+    // Alterna entre as visualizações com efeito fade
+    function toggleView() {
+      var completeView = document.getElementById('completeView');
+      var simplifiedView = document.getElementById('simplifiedView');
+      var btn = document.getElementById('toggleViewBtn');
+
+      if (completeView.style.display !== 'none') {
+        completeView.style.opacity = 0;
+        setTimeout(function() {
+          completeView.style.display = 'none';
+          simplifiedView.style.display = 'block';
+          setTimeout(function() {
+            simplifiedView.style.opacity = 1;
+          }, 50);
+        }, 500);
+        btn.textContent = 'Versão Completa';
+      } else {
+        simplifiedView.style.opacity = 0;
+        setTimeout(function() {
+          simplifiedView.style.display = 'none';
+          completeView.style.display = 'block';
+          setTimeout(function() {
+            completeView.style.opacity = 1;
+          }, 50);
+        }, 500);
+        btn.textContent = 'Versão Simplificada';
+      }
+    }
+    
+    // Função para scroll suave para as seções Treino A ou Treino B
+    function scrollToSection(letter) {
+      var completeViewActive = document.getElementById('completeView').style.display !== 'none';
+      var targetId = (letter === 'a') ? (completeViewActive ? 'treino-a' : 'simplified-treino-a') 
+                                      : (completeViewActive ? 'treino-b' : 'simplified-treino-b');
+      var target = document.getElementById(targetId);
+      if(target) {
+        target.scrollIntoView({ behavior: 'smooth' });
+      }
+    }
+    
+    // Botão Voltar ao Topo
+    window.addEventListener("scroll", function() {
+      var backToTop = document.getElementById("backToTop");
+      if (document.body.scrollTop > 200 || document.documentElement.scrollTop > 200) {
+        backToTop.style.display = "flex";
+      } else {
+        backToTop.style.display = "none";
+      }
+    });
+    
+    function scrollToTop() {
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+    
+    // Impede clique direito e atalhos para inspecionar o código (mantém segurança em iPhone)
+    document.addEventListener('contextmenu', function(e) {
+      e.preventDefault();
+    });
+    document.onkeydown = function(e) {
+      if (e.keyCode === 123 ||
+          (e.ctrlKey && e.shiftKey && (e.keyCode === 73 || e.keyCode === 74)) ||
+          (e.ctrlKey && e.keyCode === 85)) {
+        return false;
+      }
+    };
+
+    // Inicializa o ícone de Dark Mode (modo claro por padrão)
+    document.addEventListener("DOMContentLoaded", function() {
+      document.getElementById('darkModeToggle').innerHTML = moonIcon;
+    });
+  </script>
+</head>
+<body>
+  <!-- Botão de Dark Mode no canto superior direito -->
+  <button id="darkModeToggle" onclick="toggleDarkMode()" title="Alternar Modo Escuro"></button>
+  
+  <div class="container">
+    <header>
+      <div class="header-container">
+        <h1>Treinamento Personalizado</h1>
+        <div class="header-info">
+          <span>William Tozei</span>
+          <span>Aluno: Saulo</span>
+        </div>
+      </div>
+    </header>
+    
+    <!-- Botões de navegação para os treinos -->
+    <div class="nav-buttons">
+      <button onclick="scrollToSection('a')">Treino A</button>
+      <button onclick="scrollToSection('b')">Treino B</button>
+    </div>
+    
+    <!-- Botão para alternar visualizações -->
+    <button id="toggleViewBtn" class="toggle-btn" onclick="toggleView()">Versão Simplificada</button>
+    
+    <!-- Visualização Completa -->
+    <div id="completeView">
+      <section id="treino-a">
+        <h2>Treino A</h2>
+        <table>
+          <thead>
+            <tr>
+              <th>#</th>
+              <th>Exercício</th>
+              <th>Séries x Reps</th>
+              <th>Peso</th>
+              <th>Ajuste</th>
+              <th>Vídeo</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>1</td>
+              <td>Supino reto na máquina</td>
+              <td>2x10<br>2x8+Max</td>
+              <td>80kg<br>80kg/70kg</td>
+              <td>Banco 6</td>
+              <td>
+                <div class="video-container">
+                  <iframe loading="lazy" src="https://www.youtube.com/embed/vnd-GBtTMLI?si=RbpSVLkV97GPuk4y" title="Supino reto na máquina" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
+                </div>
+              </td>
+            </tr>
+            <tr>
+              <td>2</td>
+              <td>Supino inclinado na máquina</td>
+              <td>2x10<br>2x8+Max</td>
+              <td>80kg<br>80kg/70kg</td>
+              <td>Banco 6<br>Pegada Interna</td>
+              <td>
+                <div class="video-container">
+                  <iframe loading="lazy" src="https://www.youtube.com/embed/kGWVevXq_0Q?si=vAzKI87zfZpTQB6y" title="Supino inclinado na máquina" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
+                </div>
+              </td>
+            </tr>
+            <tr>
+              <td>3</td>
+              <td>Tríceps pulley Barra V</td>
+              <td>2x10<br>2x8+Max</td>
+              <td>35kg<br>35kg/28kg</td>
+              <td>-</td>
+              <td>
+                <div class="video-container">
+                  <iframe loading="lazy" src="https://www.youtube.com/embed/qstDJ3PK8D0" title="Tríceps pulley Barra V" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
+                </div>
+              </td>
+            </tr>
+            <tr>
+              <td>4</td>
+              <td>Desenvolvimento ombro na Máquina</td>
+              <td>4x10</td>
+              <td>50kg</td>
+              <td>Banco 6, Pegada Aberta</td>
+              <td>
+                <div class="video-container">
+                  <iframe loading="lazy" src="https://www.youtube.com/embed/iaIGgpHj-xs?si=VJX4mbSrXTdhOuhf&amp;start=26" title="Desenvolvimento ombro na Máquina" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
+                </div>
+              </td>
+            </tr>
+            <tr>
+              <td>5</td>
+              <td>Elevação lateral com halteres</td>
+              <td>4x10</td>
+              <td>10kg</td>
+              <td>-</td>
+              <td>
+                <div class="video-container">
+                  <iframe loading="lazy" src="https://www.youtube.com/embed/rxx5KRN8KUE?si=W1TSbVH1A4zsKh9l&amp;start=40" title="Elevação lateral com halteres" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
+                </div>
+              </td>
+            </tr>
+            <tr>
+              <td>6</td>
+              <td>Leg press 180 + Panturrilha</td>
+              <td>4x15+15</td>
+              <td>125-135kg</td>
+              <td>Banco 5</td>
+              <td>
+                <div class="video-container">
+                  <iframe loading="lazy" src="https://www.youtube.com/embed/uEsZWWiYNAQ?si=L9w5Mdhbzcrujl9s&amp;start=41" title="Leg press 180 + Panturrilha" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
+                </div>
+              </td>
+            </tr>
+            <tr>
+              <td>7</td>
+              <td>Banco Extensor</td>
+              <td>3x8+10"</td>
+              <td>95kg</td>
+              <td>Banco 5</td>
+              <td>
+                <div class="video-container">
+                  <iframe loading="lazy" src="https://www.youtube.com/embed/ycv7NZYOpE4?si=Iaj8hJTAr_mft2v2&amp;start=32" title="Banco Extensor" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
+                </div>
+              </td>
+            </tr>
+            <tr>
+              <td>9</td>
+              <td>Abdominal supra na máquina deitado</td>
+              <td>3x15</td>
+              <td>55kg</td>
+              <td>-</td>
+              <td>
+                <div class="video-container">
+                  <iframe loading="lazy" src="https://www.youtube.com/embed/rcLa7tUYNaM?si=D4pfCYTWPdo8DrDV&amp;start=10" title="Abdominal supra na máquina deitado" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
+                </div>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </section>
+      
+      <section id="treino-b">
+        <h2>Treino B</h2>
+        <table>
+          <thead>
+            <tr>
+              <th>#</th>
+              <th>Exercício</th>
+              <th>Séries x Reps</th>
+              <th>Peso</th>
+              <th>Ajuste</th>
+              <th>Vídeo</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>1</td>
+              <td>Pulley anterior barra</td>
+              <td>4x10</td>
+              <td>65kg</td>
+              <td>Barra 4</td>
+              <td>
+                <div class="video-container">
+                  <iframe loading="lazy" src="https://www.youtube.com/embed/suWROTA8PVY" title="MAG grip lat pulldown" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
+                </div>
+              </td>
+            </tr>
+            <tr>
+              <td>2</td>
+              <td>Remada baixa na máquina com alças</td>
+              <td>2x10<br>2x8+Max</td>
+              <td>33kg<br>33kg/28kg</td>
+              <td>-</td>
+              <td>
+                <div class="video-container">
+                  <iframe loading="lazy" src="https://www.youtube.com/embed/49chfmsNMzk?si=OayU9MvXUe2nwHR8&amp;start=10" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
+                </div>
+              </td>
+            </tr>
+            <tr>
+              <td>3</td>
+              <td>Voador inverso</td>
+              <td>3x10</td>
+              <td>50kg</td>
+              <td>Banco 1</td>
+              <td>
+                <div class="video-container">
+                  <iframe loading="lazy" src="https://www.youtube.com/embed/eLJgKjlWe5U" title="Technogym Strength | Reverse Fly" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
+                </div>
+              </td>
+            </tr>
+            <tr>
+              <td>4</td>
+              <td>Rosca direta com halteres</td>
+              <td>3x10</td>
+              <td>14kg</td>
+              <td>-</td>
+              <td>
+                <div class="video-container">
+                  <iframe loading="lazy" src="https://www.youtube.com/embed/PuaJzTatIJM" title="Dumbbell Bicep Curls" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
+                </div>
+              </td>
+            </tr>
+            <tr>
+              <td>5</td>
+              <td>Rosca scoth Máquina</td>
+              <td>4x10</td>
+              <td>46kg</td>
+              <td>Banco 3</td>
+              <td>
+                <div class="video-container">
+                  <iframe loading="lazy" src="https://www.youtube.com/embed/z3mDho7YQqU" title="LifeFitness Bicep Machine" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
+                </div>
+              </td>
+            </tr>
+            <tr>
+              <td>6</td>
+              <td>Elevação de ombros completa (180°)</td>
+              <td>3x10</td>
+              <td>8kg</td>
+              <td>-</td>
+              <td>
+                <div class="video-container">
+                  <iframe loading="lazy" src="https://www.youtube.com/embed/z3mDho7YQqU" title="LifeFitness Bicep Machine" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
+                </div>
+              </td>
+            </tr>
+            <tr>
+              <td>7</td>
+              <td>Flexoror deitado</td>
+              <td>3x10</td>
+              <td>65kg</td>
+              <td>-</td>
+              <td>
+                <div class="video-container">
+                  <iframe loading="lazy" src="https://www.youtube.com/embed/uNPWyzhzbBI" title="How to use the lying leg curl machine?" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
+                </div>
+              </td>
+            </tr>
+            <tr>
+              <td>8</td>
+              <td>Agachamento afundo com halteres (unilateral)</td>
+              <td>3x10</td>
+              <td>16kg</td>
+              <td>-</td>
+              <td>
+                <div class="video-container">
+                  <iframe loading="lazy" src="https://www.youtube.com/embed/VrxxEtJ_Ehs" title="DB split squat" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
+                </div>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </section>
+    </div>
+    
+    <!-- Visualização Simplificada -->
+    <div id="simplifiedView" class="simplified">
+      <section id="simplified-treino-a">
+        <h2>Treino A (Simplificado)</h2>
+        <ul>
+          <li>
+            <strong>1 - Supino reto na máquina</strong><br>
+            2x10, 2x8+Max<br>
+            Peso: 80kg, 80kg/70kg
+          </li>
+          <li>
+            <strong>2 - Supino inclinado na máquina</strong><br>
+            2x10, 2x8+Max<br>
+            Peso: 80kg, 80kg/70kg
+          </li>
+          <li>
+            <strong>3 - Tríceps pulley Barra V</strong><br>
+            2x10, 2x8+Max<br>
+            Peso: 35kg, 35kg/28kg
+          </li>
+          <li>
+            <strong>4 - Desenvolvimento ombro na Máquina</strong><br>
+            4x10<br>
+            Peso: 50kg
+          </li>
+          <li>
+            <strong>5 - Elevação lateral com halteres</strong><br>
+            4x10<br>
+            Peso: 10kg
+          </li>
+          <li>
+            <strong>6 - Leg press 180 + Panturrilha</strong><br>
+            4x15+15<br>
+            Peso: 125-135kg
+          </li>
+          <li>
+            <strong>7 - Banco Extensor</strong><br>
+            3x8+10"<br>
+            Peso: 95kg
+          </li>
+          <li>
+            <strong>9 - Abdominal supra na máquina deitado</strong><br>
+            3x15<br>
+            Peso: 55kg
+          </li>
+        </ul>
+      </section>
+      
+      <section id="simplified-treino-b">
+        <h2>Treino B (Simplificado)</h2>
+        <ul>
+          <li>
+            <strong>1 - Pulley anterior barra</strong><br>
+            4x10<br>
+            Peso: 65kg
+          </li>
+          <li>
+            <strong>2 - Remada baixa na máquina com alças</strong><br>
+            2x10, 2x8+Max<br>
+            Peso: 33kg, 33kg/28kg
+          </li>
+          <li>
+            <strong>3 - Voador inverso</strong><br>
+            3x10<br>
+            Peso: 50kg
+          </li>
+          <li>
+            <strong>4 - Rosca direta com halteres</strong><br>
+            3x10<br>
+            Peso: 14kg
+          </li>
+          <li>
+            <strong>5 - Rosca scoth Máquina</strong><br>
+            4x10<br>
+            Peso: 46kg
+          </li>
+          <li>
+            <strong>6 - Elevação de ombros completa (180°)</strong><br>
+            3x10<br>
+            Peso: 8kg
+          </li>
+          <li>
+            <strong>7 - Flexoror deitado</strong><br>
+            3x10<br>
+            Peso: 65kg
+          </li>
+          <li>
+            <strong>8 - Agachamento afundo com halteres (unilateral)</strong><br>
+            3x10<br>
+            Peso: 16kg
+          </li>
+        </ul>
+      </section>
+    </div>
+    
+    <footer>
+      Treinamento Personalizado William Tozei
+    </footer>
+  </div>
+  
+  <!-- Botão Voltar ao Topo -->
+  <button id="backToTop" onclick="scrollToTop()" title="Voltar ao Topo">↑</button>
+</body>
+</html>
